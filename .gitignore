@@ -1,5 +1,0 @@
-build/
-build\main/
-__pycache__/
-main.spec
-.gitignore
