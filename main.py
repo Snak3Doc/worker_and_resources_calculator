@@ -21,10 +21,10 @@ class MainWindow(QMainWindow):
     def setup(self):
         ### Setup Window ###
         self.setWindowTitle("Workers & Resources Calculator")
-        self.setGeometry(100, 100, 600, 300)
+        self.setGeometry(100, 100, 600, 500)
 
         ### Setup UI ###
-        ## Functions UI
+        ## Functions UI ##
         # Mine Widgets
         self.lbl_mine_ore_purity = QLabel("Source Purity", self)
         self.lbl_mine_prod_workers = QLabel("Prod/p Worker", self)
@@ -148,7 +148,7 @@ class MainWindow(QMainWindow):
 
         data = calc_factory_output(max_output, max_inputs, max_workers, num_workers)
 
-        self.txt_terminal.append(f"Type: {data[0]}\nWorkers: {data[1]}\nOutput: {data[2]}t\nInputs: {data[3]}t\nUtilization: {data[4]}%\n")
+        self.txt_terminal.append(f"Type: {data[0]}\nWorkers: {data[1]}\nOutput: {data[2]}t\nInputs: {'t, '.join(map(str, data[3]))}t\nUtilization: {data[4]}%\n")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
