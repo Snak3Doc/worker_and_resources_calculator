@@ -1,6 +1,8 @@
 # main.py --
 import sys
 
+#workers * mech_speed
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QApplication, 
@@ -8,7 +10,7 @@ from PyQt6.QtWidgets import (
     QLabel, QGroupBox, QHBoxLayout, 
     QVBoxLayout)
 
-from tools import calc_mine_output,calc_factory_output
+from tools import calc_mine_output, calc_factory_output
 
 
 class MainWindow(QMainWindow):
@@ -18,10 +20,14 @@ class MainWindow(QMainWindow):
         self.setup()
         self.event_handlers()
 
+    def closeEvent(self, event):
+        self.auto_save(event)
+        event.accept()
+
     def setup(self):
         ### Setup Window ###
         self.setWindowTitle("Workers & Resources Calculator")
-        self.setGeometry(100, 100, 600, 500)
+        self.setGeometry(100, 100, 600, 700)
 
         ### Setup UI ###
         ## Functions UI ##
@@ -86,7 +92,7 @@ class MainWindow(QMainWindow):
         ## Terminal UI ##
         # Widgets
         self.txt_terminal = QTextEdit(self)
-        self.txt_terminal.setText("Notes:\nConveyor Engine Throughput 600t/d (Direct Connection is much higher)\n")
+        #!self.txt_terminal.setText()
 
         # Layouts
         self.lyt_terminal_main = QVBoxLayout()
@@ -117,6 +123,21 @@ class MainWindow(QMainWindow):
         self.btn_mine_calc.clicked.connect(self.get_mine_calc_data)
         self.btn_factory_calc.clicked.connect(self.get_factory_calc_data)
 
+    def write_txt(self):
+        with open("data.txt", 'w') as file:
+            temp_data = self.txt_terminal.toPlainText()
+            file.write(temp_data)
+
+    def read_txt(self):
+        with open("data.txt", 'r') as file:
+            temp_data = file.read()
+            self.txt_terminal.setText(temp_data)
+
+    def auto_save(self, event):
+            print("Auto save running")
+            self.write_txt()
+
+
     def get_mine_calc_data(self):
         source_purity = int(self.txt_mine_ore_purity.text())
         max_prod = float(self.txt_mine_prod_workers.text())
@@ -126,34 +147,27 @@ class MainWindow(QMainWindow):
             num_workers = int(num_workers)
         else:
             num_workers = None
-
-        #print(type(source_purity), type(max_prod), type(max_workers), type(num_workers))
         data = calc_mine_output(source_purity, max_prod, max_workers, num_workers)
-
         self.txt_terminal.append(f"Type: {data[0]}\nWorkers: {data[1]}\nOutput: {data[2]}t\n")
 
     def get_factory_calc_data(self):
         max_output = int(self.txt_factory_max_output.text())
-
         max_inputs = self.txt_factory_max_inputs.text().split(',')
         max_inputs = list(map(int, max_inputs))
-
         max_workers = int(self.txt_factory_max_workers.text())
-
         num_workers = self.txt_factory_num_workers.text()
         if num_workers:
             num_workers = int(num_workers)
         else:
             num_workers = None
-
         data = calc_factory_output(max_output, max_inputs, max_workers, num_workers)
-
         self.txt_terminal.append(f"Type: {data[0]}\nWorkers: {data[1]}\nOutput: {data[2]}t\nInputs: {'t, '.join(map(str, data[3]))}t\nUtilization: {data[4]}%\n")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setStyle("Windows")
     mw = MainWindow()
+    mw.read_txt()
     mw.show()
     sys.exit(app.exec())
 

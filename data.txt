@@ -1,0 +1,2 @@
+Notes:
+Conveyor Engine Throughput 600t/d (Direct Connection is much higher)
