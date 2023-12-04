@@ -1,5 +1,11 @@
 # main.py --
 import sys
+import os
+
+if getattr(sys, 'frozen', False):
+    txt_path = os.path.join(sys._MEIPASS, "data.txt")
+else:
+    txt_path = "data.txt"
 
 #workers * mech_speed
 
@@ -134,7 +140,6 @@ class MainWindow(QMainWindow):
             self.txt_terminal.setText(temp_data)
 
     def auto_save(self, event):
-            print("Auto save running")
             self.write_txt()
 
 
